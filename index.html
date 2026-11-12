@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBL Calculator</title>
+    <style>
+        :root {
+            --blue-deep: #0f3460;
+            --blue-primary: #1e40af;
+            --blue-soft: #eff6ff;
+            --teal-accent: #0d9488;
+            --green-primary: #15803d;
+            --green-soft: #ecfdf5;
+            --border-color: #cbd5e1;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #ecfdf5 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px 12px; 
+            box-sizing: border-box;
+        }
+
+        .calc-box { 
+            background: #ffffff; 
+            border-radius: 14px; 
+            box-shadow: 0 10px 25px -5px rgba(15, 52, 96, 0.1), 0 8px 10px -6px rgba(13, 148, 136, 0.08); 
+            max-width: 490px; 
+            width: 100%; 
+            padding: 24px; 
+            box-sizing: border-box; 
+            border: 1px solid #e2e8f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        h3 { 
+            margin: 0;
+            color: var(--blue-deep); 
+            font-size: 19px; 
+            font-weight: 700;
+        }
+
+        .sub-tag {
+            font-size: 11px;
+            color: var(--teal-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1.15fr 1fr; 
+            gap: 8px 12px; 
+            align-items: center; 
+        }
+
+        label { 
+            font-size: 12.5px; 
+            font-weight: 600; 
+            color: #334155; 
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 7px 10px; 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 6px; 
+            text-align: right; 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            box-sizing: border-box; 
+            background: #f8fafc; 
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: var(--teal-accent); 
+            background: #ffffff; 
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+        }
+
+        .suspense-wrap {
+            display: flex;
+            gap: 6px;
+        }
+
+        .suspense-wrap select {
+            width: 70px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--blue-deep);
+            cursor: pointer;
+            padding: 7px 4px;
+        }
+
+        .choice-segment {
+            grid-column: span 2;
+            background: var(--blue-soft);
+            border: 1px dashed #bfdbfe;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 4px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-pills {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--blue-primary);
+        }
+
+        .radio-pills label {
+            cursor: pointer;
+            gap: 4px;
+            margin: 0;
+            font-size: 12px;
+            color: var(--blue-primary);
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 8px 12px;
+            align-items: center;
+        }
+
+        .out { 
+            text-align: right; 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: var(--blue-primary); 
+            padding: 6px 10px; 
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1.5px solid #edf2f7;
+            box-sizing: border-box;
+            min-height: 31px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .out.highlight-derived {
+            background: var(--green-soft);
+            color: var(--green-primary);
+            border-color: #bbf7d0;
+        }
+
+        .action-row {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .calc-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #1e40af 0%, #0d9488 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(15, 52, 96, 0.15);
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .calc-btn:hover {
+            opacity: 0.95;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.99);
+        }
+
+        .clear-btn { 
+            background: #f1f5f9; 
+            color: var(--text-muted); 
+            border: 1px solid #cbd5e1; 
+            padding: 10px 14px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover { 
+            background: #e2e8f0; 
+            color: var(--text-dark); 
+        }
+
+        .result-box { 
+            background: linear-gradient(135deg, #0f3460 0%, #0d9488 100%); 
+            border-radius: 8px; 
+            padding: 14px 16px; 
+            margin-top: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+        }
+
+        .res-lbl { 
+            font-weight: 600; 
+            font-size: 12.5px; 
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: #e2e8f0;
+        }
+
+        .res-val { 
+            font-weight: 800; 
+            font-size: 19px; 
+            color: #f0fdf4;
+        }
+
+        /* Reverse Section */
+        .reverse-container {
+            margin-top: 18px;
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 14px;
+        }
+
+        .reverse-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--teal-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reverse-btn {
+            background: linear-gradient(135deg, #0d9488 0%, #15803d 100%);
+            color: #fff;
+            border: none;
+            padding: 9px 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            box-shadow: 0 3px 8px rgba(13, 148, 136, 0.2);
+        }
+
+        .reverse-btn:hover {
+            opacity: 0.95;
+        }
+
+        .note-card {
+            margin-top: 14px;
+            padding: 10px 12px;
+            background-color: #f0fdf4;
+            border-left: 3.5px solid var(--green-primary);
+            border-radius: 4px 6px 6px 4px;
+            box-sizing: border-box;
+        }
+
+        .note-card p {
+            margin: 0;
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: #166534;
+        }
+
+        .note-card strong {
+            color: #14532d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calc-box">
+    <div class="header">
+        <h3>Passbook Loan (PBL) Calculator</h3>
+        <div class="sub-tag">Kerala State Financial Enterprises Ltd.</div>
+    </div>
+
+    <!-- Base Chitty Information (Shared inputs) -->
+    <div class="grid">
+        <label>Monthly Installment</label>
+        <div class="input-wrap"><input type="number" id="mInst" value="0" oninput="updateBaseValues()"></div>
+
+        <label>Duration (Months)</label>
+        <div class="input-wrap"><input type="number" id="dur" value="0" oninput="updateBaseValues()"></div>
+
+        <label>Sala</label>
+        <div class="out" id="sala">0</div>
+
+        <label>F.C (%)</label>
+        <div class="input-wrap"><input type="number" id="fPct" value="5" step="0.1" oninput="updateBaseValues()"></div>
+
+        <label>Forman's Commission</label>
+        <div class="out" id="fVal">0</div>
+
+        <label>Installments Paid</label>
+        <div class="input-wrap"><input type="number" id="paid" value="0" oninput="updateBaseValues()"></div>
+
+        <label>Proportionate F.C</label>
+        <div class="out" id="fProp">0</div>
+
+        <label>Default Interest (%)</label>
+        <div class="input-wrap"><input type="number" id="iRate" value="13.5" step="0.1"></div>
+
+        <label>Chitty Suspense</label>
+        <div class="suspense-wrap">
+            <input type="number" id="susp" value="0" oninput="updateBaseValues()">
+            <select id="suspType" onchange="updateBaseValues()">
+                <option value="CR" selected>Cr (+)</option>
+                <option value="DR">Dr (-)</option>
+            </select>
+        </div>
+
+        <!-- Choice Segment: Total Auction Discount or Remitted -->
+        <div class="choice-segment">
+            <div class="radio-pills">
+                <span>Input Mode:</span>
+                <label>
+                    <input type="radio" name="inputChoice" value="discount" checked onchange="toggleChoice()"> Total Auction Discount
+                </label>
+                <label>
+                    <input type="radio" name="inputChoice" value="remitted" onchange="toggleChoice()"> Total Amount Remitted
+                </label>
+            </div>
+
+            <div class="choice-grid">
+                <label id="lblDisc">Total Auction Discount</label>
+                <div id="wrapDisc" class="input-wrap">
+                    <input type="number" id="disc" value="0" oninput="onDiscountInput()">
+                </div>
+                <div id="outDisc" class="out highlight-derived" style="display: none;">0</div>
+
+                <label id="lblRemit">Total Amount Remitted</label>
+                <div id="wrapRemit" class="input-wrap" style="display: none;">
+                    <input type="number" id="remit" value="0" oninput="onRemittedInput()">
+                </div>
+                <div id="outRemit" class="out highlight-derived">0</div>
+            </div>
+        </div>
+
+        <label>Paid Up Value</label>
+        <div class="out" id="pUp">0</div>
+    </div>
+
+    <!-- Calculate Final Loan Amount Action Button -->
+    <div class="action-row">
+        <button type="button" class="calc-btn" onclick="calcFinalLoan()">Calculate Final Loan Amount</button>
+        <button type="button" class="clear-btn" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div class="result-box">
+        <div class="res-lbl">ELIGIBLE LOAN AMOUNT</div>
+        <div class="res-val" id="elig">0</div>
+    </div>
+
+    <!-- Reverse Calculation Window -->
+    <div class="reverse-container">
+        <div class="reverse-title">
+            <span>Reverse Calculation (By Desired Loan)</span>
+        </div>
+
+        <div class="grid">
+            <label style="color: var(--teal-accent);">Input Loan Amount</label>
+            <div class="input-wrap">
+                <input type="number" id="revLoanInput" placeholder="Enter Loan Amount" value="0">
+            </div>
+        </div>
+
+        <button type="button" class="reverse-btn" onclick="calcReverse()">Reverse Calculate</button>
+
+        <div class="grid" style="margin-top: 10px;">
+            <label>Paid Up Value (x)</label>
+            <div class="out highlight-derived" id="revPaidUp">0</div>
+
+            <label>Total Amount Remitted</label>
+            <div class="out highlight-derived" id="revRemit">0</div>
+
+            <label>Total Auction Discount</label>
+            <div class="out highlight-derived" id="revDisc">0</div>
+        </div>
+    </div>
+
+    <!-- Mandatory Footer Note -->
+    <div class="note-card">
+        <p><strong>Note:</strong> "PBL Eligible Amount" is applicable for prompt subscribers only. Unpresented/ uncleared cheques will not be considered for the calculation of eligible amount.</p>
+    </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const getVal = id => parseFloat($(id).value) || 0;
+
+function fmt(num) {
+    if (isNaN(num)) return "0";
+    let roundedStr = Math.round(num).toString();
+    let isNeg = false;
+    if (roundedStr.startsWith('-')) {
+        isNeg = true;
+        roundedStr = roundedStr.substring(1);
+    }
+    let lastThree = roundedStr.substring(roundedStr.length - 3);
+    let otherBits = roundedStr.substring(0, roundedStr.length - 3);
+    if (otherBits !== '') lastThree = ',' + lastThree;
+    let main = otherBits.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    return (isNeg ? '-' : '') + main;
+}
+
+function updateBaseValues() {
+    const mi = getVal('mInst');
+    const d = getVal('dur');
+    const fp = getVal('fPct');
+    const ip = getVal('paid');
+
+    const sala = Math.round(mi * d);
+    const fVal = Math.round((fp / 100) * sala);
+    const fProp = d > 0 ? Math.round((fVal / d) * ip) : 0;
+
+    $('sala').innerText = fmt(sala);
+    $('fVal').innerText = fmt(fVal);
+    $('fProp').innerText = fmt(fProp);
+
+    const choice = document.querySelector('input[name="inputChoice"]:checked').value;
+    if (choice === 'discount') {
+        onDiscountInput();
+    } else {
+        onRemittedInput();
+    }
+}
+
+function toggleChoice() {
+    const choice = document.querySelector('input[name="inputChoice"]:checked').value;
+    if (choice === 'discount') {
+        $('wrapDisc').style.display = 'block';
+        $('outDisc').style.display = 'none';
+        $('wrapRemit').style.display = 'none';
+        $('outRemit').style.display = 'flex';
+        onDiscountInput();
+    } else {
+        $('wrapDisc').style.display = 'none';
+        $('outDisc').style.display = 'flex';
+        $('wrapRemit').style.display = 'block';
+        $('outRemit').style.display = 'none';
+        onRemittedInput();
+    }
+}
+
+function onDiscountInput() {
+    const mi = getVal('mInst');
+    const ip = getVal('paid');
+    const ad = getVal('disc');
+    const remit = Math.round((mi * ip) - ad);
+    $('remit').value = remit;
+    $('outRemit').innerText = fmt(remit);
+    computeForwardPaidUp();
+}
+
+function onRemittedInput() {
+    const mi = getVal('mInst');
+    const ip = getVal('paid');
+    const remit = getVal('remit');
+    const ad = Math.round((mi * ip) - remit);
+    $('disc').value = ad;
+    $('outDisc').innerText = fmt(ad);
+    computeForwardPaidUp();
+}
+
+function computeForwardPaidUp() {
+    const remit = getVal('remit');
+    const cs = getVal('susp');
+    const isDr = $('suspType').value === 'DR';
+    const signedSusp = isDr ? -cs : cs;
+
+    const d = getVal('dur');
+    const sala = Math.round(getVal('mInst') * d);
+    const fVal = Math.round((getVal('fPct') / 100) * sala);
+    const fProp = d > 0 ? Math.round((fVal / d) * getVal('paid')) : 0;
+
+    // Paid Up Value = Remitted + Suspense(Cr/Dr) - Proportionate F.C.
+    const pUp = Math.round(remit + signedSusp - fProp);
+    $('pUp').innerText = fmt(pUp);
+    return pUp;
+}
+
+// 1. Forward Button: Calculate the final eligible loan amount (gives 65,011)
+function calcFinalLoan() {
+    const pUp = computeForwardPaidUp();
+    const d = getVal('dur');
+    const ip = getVal('paid');
+    const ir = getVal('iRate');
+    const remMonths = d - ip;
+
+    const denom = 1200 + (ir * remMonths);
+    const elig = denom > 0 ? (pUp * 1200) / denom : 0;
+
+    $('elig').innerText = fmt(Math.max(0, Math.round(elig)));
+}
+
+// 2. Reverse Button: Calculate Paid Up Value, Total Amount Remitted, and Auction Discount from Desired Loan Amount
+function calcReverse() {
+    const pbl = getVal('revLoanInput');
+    const d = getVal('dur');
+    const ip = getVal('paid');
+    const ir = getVal('iRate');
+    const remMonths = d - ip;
+    const mi = getVal('mInst');
+    const fp = getVal('fPct');
+
+    const cs = getVal('susp');
+    const isDr = $('suspType').value === 'DR';
+    const signedSusp = isDr ? -cs : cs;
+
+    // Reverse: Paid Up Value = pbl + (pbl * ir * remMonths / 1200)
+    const denom = 1200 + (ir * remMonths);
+    const revPaidUp = Math.round((pbl * denom) / 1200);
+
+    // Paid Up = Remitted + signedSusp - Proportionate F.C.
+    // => Remitted = Paid Up - signedSusp + Proportionate F.C.
+    const sala = Math.round(mi * d);
+    const fVal = Math.round((fp / 100) * sala);
+    const fProp = d > 0 ? Math.round((fVal / d) * ip) : 0;
+    const revRemitted = Math.round(revPaidUp - signedSusp + fProp);
+
+    // Remitted = (Installment * Paid) - Discount
+    // => Discount = (mi * ip) - Remitted
+    const revDiscount = Math.round((mi * ip) - revRemitted);
+
+    $('revPaidUp').innerText = fmt(revPaidUp);
+    $('revRemit').innerText = fmt(revRemitted);
+    $('revDisc').innerText = fmt(revDiscount);
+}
+
+function clearAll() {
+    ['mInst','dur','fPct','paid','iRate','susp','disc','remit','revLoanInput'].forEach(id => {
+        if ($(id)) $(id).value = '';
+    });
+    ['sala','fVal','fProp','pUp','elig','outRemit','outDisc','revPaidUp','revRemit','revDisc'].forEach(id => {
+        if ($(id)) $(id).innerText = '0';
+    });
+}
+
+window.onload = () => {
+    updateBaseValues();
+};
+</script>
+
+</body>
+</html>
